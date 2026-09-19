@@ -10,17 +10,22 @@
 importScripts(
   '../lib/hashing-vectorizer.js',
   '../lib/attendee-matcher.js',
+  '../lib/mom-generator.js',
+  '../lib/google-drive.js',
   '../lib/db.js'
 );
 
 const DB = self.Precedent.DB;
 const AttendeeMatcher = self.Precedent.AttendeeMatcher;
+const MOMGenerator = self.Precedent.MOMGenerator;
+const GoogleDrive = self.Precedent.GoogleDrive;
 
 const DEFAULT_SETTINGS = {
   platforms: { meet: true, zoom: true, teams: true },
   similarityThreshold: 0.42,
   retentionDays: 180,
-  overlayEnabled: true
+  overlayEnabled: true,
+  googleDriveAutoSync: false
 };
 
 function getSettings() {
@@ -113,6 +118,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             for (const d of message.decisions || []) {
               await DB.addDecision({ ...d, meetingId: message.meetingId });
             }
+            if (message.transcripts && message.transcripts.length > 0) {
+              await DB.appendTranscriptLines(message.meetingId, message.transcripts);
+            }
           }
           sendResponse({ ok: true });
           break;
@@ -126,8 +134,47 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           for (const d of message.decisions || []) {
             await DB.addDecision({ ...d, meetingId: message.meetingId });
           }
+          if (message.transcripts && message.transcripts.length > 0) {
+            await DB.appendTranscriptLines(message.meetingId, message.transcripts);
+          }
           updateBadge(tabId, '', null);
-          sendResponse({ ok: true });
+
+          // Auto-sync to Google Drive if enabled in settings
+          let driveSync = null;
+          const settings = await getSettings();
+          if (settings.googleDriveAutoSync) {
+            try {
+              const driveStatus = await GoogleDrive.getStatus();
+              if (driveStatus.connected) {
+                const meeting = (await DB.getAllMeetings()).find((m) => m.id === message.meetingId);
+                const allCommitments = (await DB.getAll('commitments')).filter((c) => c.meetingId === message.meetingId);
+                const allDecisions = (await DB.getAllDecisions()).filter((d) => d.meetingId === message.meetingId);
+                const transcript = await DB.getTranscript(message.meetingId);
+                const momData = {
+                  title: (meeting && meeting.title) || 'Meeting',
+                  startTime: (meeting && meeting.startTime) || Date.now(),
+                  endTime: Date.now(),
+                  platform: (meeting && meeting.platform) || 'call',
+                  attendees: (meeting && meeting.attendees) || [],
+                  commitments: allCommitments,
+                  decisions: allDecisions,
+                  transcript
+                };
+                const markdownMOM = MOMGenerator.toMarkdown(momData);
+                const rawTranscript = transcript.map((l) => `[${new Date(l.timestamp).toLocaleTimeString()}] ${l.speaker}: ${l.text}`).join('\n');
+                driveSync = await GoogleDrive.syncMeetingToDrive({
+                  meetingTitle: momData.title,
+                  startTime: momData.startTime,
+                  markdownMOM,
+                  rawTranscript
+                });
+              }
+            } catch (err) {
+              console.warn('Auto-sync to Google Drive failed:', err);
+            }
+          }
+
+          sendResponse({ ok: true, driveSync });
           break;
         }
 
@@ -137,6 +184,77 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           }
           updateBadge(tabId, '', null);
           sendResponse({ ok: true });
+          break;
+        }
+
+        case 'GENERATE_MOM': {
+          const meeting = (await DB.getAllMeetings()).find((m) => m.id === message.meetingId);
+          const allCommitments = (await DB.getAll('commitments')).filter((c) => c.meetingId === message.meetingId);
+          const allDecisions = (await DB.getAllDecisions()).filter((d) => d.meetingId === message.meetingId);
+          const transcript = await DB.getTranscript(message.meetingId);
+          const momData = {
+            title: (meeting && meeting.title) || message.meetingTitle || 'Meeting',
+            startTime: (meeting && meeting.startTime) || message.startTime || Date.now(),
+            endTime: (meeting && meeting.endTime) || Date.now(),
+            platform: (meeting && meeting.platform) || 'call',
+            attendees: (meeting && meeting.attendees) || message.attendees || [],
+            commitments: allCommitments.length > 0 ? allCommitments : (message.commitments || []),
+            decisions: allDecisions.length > 0 ? allDecisions : (message.decisions || []),
+            transcript: transcript.length > 0 ? transcript : (message.transcript || [])
+          };
+          const markdown = MOMGenerator.toMarkdown(momData);
+          const plainText = MOMGenerator.toPlainText(momData);
+          sendResponse({ ok: true, markdown, plainText, momData });
+          break;
+        }
+
+        case 'DRIVE_STATUS': {
+          const status = await GoogleDrive.getStatus();
+          sendResponse({ ok: true, status });
+          break;
+        }
+
+        case 'DRIVE_AUTH': {
+          const token = await GoogleDrive.getToken(true);
+          const status = await GoogleDrive.getStatus();
+          sendResponse({ ok: !!token, status });
+          break;
+        }
+
+        case 'DRIVE_DISCONNECT': {
+          await GoogleDrive.disconnect();
+          sendResponse({ ok: true });
+          break;
+        }
+
+        case 'SYNC_MEETING_TO_DRIVE': {
+          let markdownMOM = message.markdownMOM;
+          let rawTranscript = message.rawTranscript;
+          if (!markdownMOM && message.meetingId) {
+            const meeting = (await DB.getAllMeetings()).find((m) => m.id === message.meetingId);
+            const allCommitments = (await DB.getAll('commitments')).filter((c) => c.meetingId === message.meetingId);
+            const allDecisions = (await DB.getAllDecisions()).filter((d) => d.meetingId === message.meetingId);
+            const transcript = await DB.getTranscript(message.meetingId);
+            const momData = {
+              title: (meeting && meeting.title) || 'Meeting',
+              startTime: (meeting && meeting.startTime) || Date.now(),
+              endTime: (meeting && meeting.endTime) || Date.now(),
+              platform: (meeting && meeting.platform) || 'call',
+              attendees: (meeting && meeting.attendees) || [],
+              commitments: allCommitments,
+              decisions: allDecisions,
+              transcript
+            };
+            markdownMOM = MOMGenerator.toMarkdown(momData);
+            rawTranscript = transcript.map((l) => `[${new Date(l.timestamp).toLocaleTimeString()}] ${l.speaker}: ${l.text}`).join('\n');
+          }
+          const syncResult = await GoogleDrive.syncMeetingToDrive({
+            meetingTitle: message.meetingTitle || 'Meeting',
+            startTime: message.startTime || Date.now(),
+            markdownMOM,
+            rawTranscript
+          });
+          sendResponse({ ok: true, result: syncResult });
           break;
         }
 

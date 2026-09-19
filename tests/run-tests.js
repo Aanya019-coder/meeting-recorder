@@ -235,6 +235,57 @@ test('detects attendee overlap across meetings', () => {
 });
 
 // -------------------------------------------------------------
+// MOMGenerator Tests
+// -------------------------------------------------------------
+console.log('\n--- MOMGenerator ---');
+
+const MOMGenerator = require('../lib/mom-generator.js');
+
+test('generates structured Markdown MOM with all sections', () => {
+  const meetingData = {
+    title: 'Design Sprint Review',
+    startTime: new Date('2026-09-18T10:00:00Z').getTime(),
+    endTime: new Date('2026-09-18T10:45:00Z').getTime(),
+    platform: 'meet',
+    attendees: ['Alice', 'Bob'],
+    commitments: [
+      { owner: 'Alice', task: 'send revised Figma mockups by Monday', dueLabel: 'Monday', resolved: false }
+    ],
+    decisions: [
+      { summary: 'use high-contrast palette for buttons', speaker: 'Bob' }
+    ],
+    transcript: [
+      { speaker: 'Alice', text: 'Good morning everyone.', timestamp: 1789800000000 },
+      { speaker: 'Bob', text: "Let's go with the high-contrast palette.", timestamp: 1789800010000 }
+    ]
+  };
+
+  const md = MOMGenerator.toMarkdown(meetingData);
+  assert(md.includes('# Minutes of Meeting: Design Sprint Review'));
+  assert(md.includes('## Executive Summary'));
+  assert(md.includes('## Key Decisions Settled'));
+  assert(md.includes('use high-contrast palette for buttons'));
+  assert(md.includes('## Action Items & Commitments'));
+  assert(md.includes('send revised Figma mockups'));
+  assert(md.includes('## Full Transcript Log'));
+});
+
+test('generates clean PlainText MOM', () => {
+  const meetingData = {
+    title: 'Quick Sync',
+    startTime: Date.now(),
+    endTime: Date.now() + 900000,
+    platform: 'teams',
+    attendees: ['Sarah'],
+    commitments: [],
+    decisions: [{ summary: 'keep current sprint goals', speaker: 'Sarah' }]
+  };
+  const txt = MOMGenerator.toPlainText(meetingData);
+  assert(txt.includes('MINUTES OF MEETING: QUICK SYNC'));
+  assert(txt.includes('keep current sprint goals'));
+});
+
+// -------------------------------------------------------------
 // Summary
 // -------------------------------------------------------------
 console.log(`\n=== Results: ${passedCount}/${totalCount} tests passed ===`);

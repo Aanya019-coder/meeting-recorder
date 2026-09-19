@@ -39,6 +39,30 @@
     </section>
 
     <section class="pc-opt-card">
+      <h2>Google Drive Cloud Sync</h2>
+      <p class="pc-opt-help">Automatically backup Minutes of Meeting (MOM) and full transcripts to a private "Precedent Meeting Notes" folder in your Google Drive. Uses the restricted <code>drive.file</code> scope.</p>
+      <div class="pc-opt-row" style="align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div>
+          <strong id="drive-account-label">Not connected</strong>
+          <div id="drive-account-detail" class="pc-opt-help" style="margin: 2px 0 0;">Connect your Google account to enable auto-sync.</div>
+        </div>
+        <button id="drive-auth-btn" class="pc-opt-btn pc-opt-btn-primary">Connect Google Drive</button>
+      </div>
+      <label class="pc-opt-toggle">
+        <input type="checkbox" id="toggle-drive-autosync" />
+        Auto-upload MOM &amp; Transcripts when meetings end
+      </label>
+      <div style="margin-top: 10px;">
+        <details>
+          <summary style="font-size: 11.5px; color: var(--muted); cursor: pointer;">Advanced: Custom Google OAuth Client ID</summary>
+          <div style="margin-top: 8px;">
+            <input type="text" id="custom-client-id" placeholder="Your Google OAuth Client ID (optional)" style="width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px;" />
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="pc-opt-card">
       <h2>Your data</h2>
       <div class="pc-opt-row">
         <button id="export-btn" class="pc-opt-btn pc-opt-btn-primary">Export everything as JSON</button>

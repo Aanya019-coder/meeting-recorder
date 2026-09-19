@@ -176,3 +176,63 @@ body {
   padding: 4px 0;
 }
 .pc-pop-link:hover { text-decoration: underline; }
+
+.pc-pop-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pc-pop-drive-pill {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(20,24,31,0.06);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+.pc-pop-drive-pill.connected {
+  background: rgba(47,107,94,0.15);
+  color: #2F6B5E;
+  border-color: rgba(47,107,94,0.3);
+  font-weight: 500;
+}
+.pc-pop-drive-pill.disconnected:hover {
+  background: rgba(47,107,94,0.1);
+  color: #2F6B5E;
+}
+
+.pc-pop-item-meeting {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pc-pop-item-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.pc-pop-mini-btn {
+  background: rgba(20,24,31,0.05);
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 10.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pc-pop-mini-btn:hover {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: white;
+}

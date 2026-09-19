@@ -12,12 +12,46 @@ const toggleTeams = document.getElementById('toggle-teams');
 const thresholdSlider = document.getElementById('threshold-slider');
 const thresholdLabel = document.getElementById('threshold-label');
 const retentionSelect = document.getElementById('retention-select');
+const toggleDriveAutoSync = document.getElementById('toggle-drive-autosync');
+const driveAccountLabel = document.getElementById('drive-account-label');
+const driveAccountDetail = document.getElementById('drive-account-detail');
+const driveAuthBtn = document.getElementById('drive-auth-btn');
+const customClientId = document.getElementById('custom-client-id');
 const saveStatus = document.getElementById('save-status');
 
 function describeThreshold(v) {
   if (v <= 0.32) return `${v.toFixed(2)} \u2014 loose (more flags, more false positives)`;
   if (v >= 0.55) return `${v.toFixed(2)} \u2014 strict (only near-identical phrasing)`;
   return `${v.toFixed(2)} \u2014 balanced`;
+}
+
+async function refreshDriveUI() {
+  const res = await sendMessage({ type: 'DRIVE_STATUS' });
+  const connected = res && res.ok && res.status && res.status.connected;
+
+  if (connected) {
+    driveAccountLabel.textContent = `Connected: ${res.status.user || 'Google Account'}`;
+    driveAccountDetail.textContent = 'Backing up MOM & transcripts to "Precedent Meeting Notes" folder.';
+    driveAuthBtn.textContent = 'Disconnect';
+    driveAuthBtn.className = 'pc-opt-btn pc-opt-btn-danger';
+    driveAuthBtn.onclick = async () => {
+      driveAuthBtn.textContent = 'Disconnecting…';
+      await sendMessage({ type: 'DRIVE_DISCONNECT' });
+      await refreshDriveUI();
+      flashSaved();
+    };
+  } else {
+    driveAccountLabel.textContent = 'Not connected';
+    driveAccountDetail.textContent = 'Connect your Google account to enable auto-sync.';
+    driveAuthBtn.textContent = 'Connect Google Drive';
+    driveAuthBtn.className = 'pc-opt-btn pc-opt-btn-primary';
+    driveAuthBtn.onclick = async () => {
+      driveAuthBtn.textContent = 'Connecting…';
+      const authRes = await sendMessage({ type: 'DRIVE_AUTH' });
+      await refreshDriveUI();
+      flashSaved();
+    };
+  }
 }
 
 async function load() {
@@ -30,6 +64,15 @@ async function load() {
   thresholdSlider.value = s.similarityThreshold;
   thresholdLabel.textContent = describeThreshold(s.similarityThreshold);
   retentionSelect.value = String(s.retentionDays);
+  toggleDriveAutoSync.checked = !!s.googleDriveAutoSync;
+
+  chrome.storage.local.get('googleClientId', (data) => {
+    if (data && data.googleClientId) {
+      customClientId.value = data.googleClientId;
+    }
+  });
+
+  await refreshDriveUI();
 }
 
 function flashSaved() {
@@ -49,15 +92,23 @@ async function saveSettings() {
         teams: toggleTeams.checked
       },
       similarityThreshold: parseFloat(thresholdSlider.value),
-      retentionDays: parseInt(retentionSelect.value, 10)
+      retentionDays: parseInt(retentionSelect.value, 10),
+      googleDriveAutoSync: toggleDriveAutoSync.checked
     }
   });
+
+  if (customClientId.value.trim()) {
+    chrome.storage.local.set({ googleClientId: customClientId.value.trim() });
+  }
+
   flashSaved();
 }
 
-[toggleMeet, toggleZoom, toggleTeams, retentionSelect].forEach((elNode) => {
+[toggleMeet, toggleZoom, toggleTeams, retentionSelect, toggleDriveAutoSync].forEach((elNode) => {
   elNode.addEventListener('change', saveSettings);
 });
+
+customClientId.addEventListener('change', saveSettings);
 
 thresholdSlider.addEventListener('input', () => {
   thresholdLabel.textContent = describeThreshold(parseFloat(thresholdSlider.value));

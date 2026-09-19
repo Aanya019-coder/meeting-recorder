@@ -23,13 +23,15 @@
   "permissions": [
     "storage",
     "alarms",
-    "downloads"
+    "downloads",
+    "identity"
   ],
   "host_permissions": [
     "https://meet.google.com/*",
     "https://*.zoom.us/*",
     "https://teams.microsoft.com/*",
-    "https://teams.live.com/*"
+    "https://teams.live.com/*",
+    "https://www.googleapis.com/*"
   ],
   "content_scripts": [
     {
@@ -42,6 +44,7 @@
         "lib/commitment-extractor.js",
         "lib/decision-extractor.js",
         "lib/attendee-matcher.js",
+        "lib/mom-generator.js",
         "content/common/caption-observer.js",
         "content/common/overlay-ui.js",
         "content/common/platform-adapter.js",
@@ -64,6 +67,7 @@
         "lib/commitment-extractor.js",
         "lib/decision-extractor.js",
         "lib/attendee-matcher.js",
+        "lib/mom-generator.js",
         "content/common/caption-observer.js",
         "content/common/overlay-ui.js",
         "content/common/platform-adapter.js",
@@ -85,6 +89,7 @@
         "lib/commitment-extractor.js",
         "lib/decision-extractor.js",
         "lib/attendee-matcher.js",
+        "lib/mom-generator.js",
         "content/common/caption-observer.js",
         "content/common/overlay-ui.js",
         "content/common/platform-adapter.js",

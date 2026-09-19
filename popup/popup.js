@@ -125,6 +125,31 @@ async function renderCommitments() {
   }
 }
 
+async function renderDriveStatus() {
+  const pill = document.getElementById('drive-pill');
+  if (!pill) return;
+  const res = await sendMessage({ type: 'DRIVE_STATUS' });
+  if (res && res.ok && res.status && res.status.connected) {
+    pill.textContent = '☁️ Drive Connected';
+    pill.className = 'pc-pop-drive-pill connected';
+    pill.title = `Connected to Google Drive (${res.status.user || ''})`;
+    pill.onclick = () => chrome.runtime.openOptionsPage();
+  } else {
+    pill.textContent = '☁️ Connect Drive';
+    pill.className = 'pc-pop-drive-pill disconnected';
+    pill.title = 'Click to connect Google Drive';
+    pill.onclick = async () => {
+      pill.textContent = 'Connecting…';
+      const authRes = await sendMessage({ type: 'DRIVE_AUTH' });
+      if (authRes && authRes.ok) {
+        renderDriveStatus();
+      } else {
+        chrome.runtime.openOptionsPage();
+      }
+    };
+  }
+}
+
 async function renderMeetings() {
   const container = document.getElementById('meetings-list');
   const res = await sendMessage({ type: 'GET_RECENT_MEETINGS' });
@@ -137,7 +162,7 @@ async function renderMeetings() {
 
   for (const m of res.meetings.slice(0, 8)) {
     const item = document.createElement('div');
-    item.className = 'pc-pop-item';
+    item.className = 'pc-pop-item-meeting';
 
     const content = document.createElement('div');
     content.className = 'pc-pop-item-content';
@@ -150,8 +175,48 @@ async function renderMeetings() {
     meta.className = 'pc-pop-item-meta';
     meta.textContent = `${formatDate(m.startTime) || ''} \u00B7 ${(m.attendees || []).length} attendee(s) \u00B7 ${m.platform}`;
 
+    const actions = document.createElement('div');
+    actions.className = 'pc-pop-item-actions';
+
+    const copyMomBtn = document.createElement('button');
+    copyMomBtn.className = 'pc-pop-mini-btn';
+    copyMomBtn.textContent = '📋 Copy MOM';
+    copyMomBtn.addEventListener('click', async () => {
+      copyMomBtn.textContent = 'Generating…';
+      const momRes = await sendMessage({ type: 'GENERATE_MOM', meetingId: m.id });
+      if (momRes && momRes.ok && momRes.markdown) {
+        await navigator.clipboard.writeText(momRes.markdown);
+        copyMomBtn.textContent = '✓ Copied!';
+        setTimeout(() => { copyMomBtn.textContent = '📋 Copy MOM'; }, 2000);
+      } else {
+        copyMomBtn.textContent = 'Failed';
+        setTimeout(() => { copyMomBtn.textContent = '📋 Copy MOM'; }, 2000);
+      }
+    });
+
+    const syncDriveBtn = document.createElement('button');
+    syncDriveBtn.className = 'pc-pop-mini-btn';
+    syncDriveBtn.textContent = '☁️ Drive Sync';
+    syncDriveBtn.addEventListener('click', async () => {
+      syncDriveBtn.textContent = 'Syncing…';
+      const syncRes = await sendMessage({ type: 'SYNC_MEETING_TO_DRIVE', meetingId: m.id, meetingTitle: m.title, startTime: m.startTime });
+      if (syncRes && syncRes.ok && syncRes.result) {
+        syncDriveBtn.textContent = '✓ In Drive';
+        if (syncRes.result.webViewLink) {
+          syncDriveBtn.onclick = () => window.open(syncRes.result.webViewLink, '_blank');
+        }
+      } else {
+        syncDriveBtn.textContent = 'Needs login';
+        setTimeout(() => { chrome.runtime.openOptionsPage(); }, 1200);
+      }
+    });
+
+    actions.appendChild(copyMomBtn);
+    actions.appendChild(syncDriveBtn);
+
     content.appendChild(main);
     content.appendChild(meta);
+    content.appendChild(actions);
     item.appendChild(content);
     container.appendChild(item);
   }
@@ -179,5 +244,6 @@ document.getElementById('export-data').addEventListener('click', async () => {
 });
 
 renderStatus();
+renderDriveStatus();
 renderCommitments();
 renderMeetings();

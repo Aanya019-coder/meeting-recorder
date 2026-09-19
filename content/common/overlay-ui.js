@@ -228,14 +228,23 @@
       setTimeout(() => toast.remove(), 20000);
     }
 
-    function renderEndSummary({ newCommitments, newDecisions }, { onConfirm, onDiscard }) {
+    function renderEndSummary(
+      { newCommitments = [], newDecisions = [], transcript = [], meetingTitle = 'Meeting', attendees = [] },
+      { onConfirm, onDiscard }
+    ) {
       clearBody();
       setExpanded(true);
       wrapUpBtn.style.display = 'none';
 
       const section = el('div', 'pc-section');
-      section.appendChild(el('div', 'pc-section-title', 'Meeting wrap-up'));
-      section.appendChild(el('div', 'pc-empty', `Detected ${newCommitments.length} commitment${newCommitments.length === 1 ? '' : 's'} and ${newDecisions.length} decision${newDecisions.length === 1 ? '' : 's'}. Saved locally to this device only.`));
+      section.appendChild(el('div', 'pc-section-title', 'Meeting wrap-up & MOM'));
+      section.appendChild(
+        el(
+          'div',
+          'pc-empty',
+          `Captured ${newCommitments.length} promise${newCommitments.length === 1 ? '' : 's'}, ${newDecisions.length} decision${newDecisions.length === 1 ? '' : 's'}, and ${transcript.length} caption lines.`
+        )
+      );
 
       if (newCommitments.length > 0) {
         const group = el('div', 'pc-group');
@@ -261,19 +270,47 @@
       }
 
       const actions = el('div', 'pc-actions');
-      const keepBtn = el('button', 'pc-btn pc-btn-primary', 'Save to this device');
+      actions.style.display = 'flex';
+      actions.style.flexWrap = 'wrap';
+      actions.style.gap = '6px';
+
+      const copyMomBtn = el('button', 'pc-btn pc-btn-ghost', '📋 Copy MOM');
+      copyMomBtn.addEventListener('click', () => {
+        const MOMGen = (global.Precedent && global.Precedent.MOMGenerator);
+        if (MOMGen) {
+          const md = MOMGen.toMarkdown({
+            title: meetingTitle,
+            startTime: Date.now(),
+            platform: 'call',
+            attendees,
+            commitments: newCommitments,
+            decisions: newDecisions,
+            transcript
+          });
+          navigator.clipboard.writeText(md).then(() => {
+            copyMomBtn.textContent = '✓ Copied MOM!';
+            setTimeout(() => { copyMomBtn.textContent = '📋 Copy MOM'; }, 2000);
+          });
+        }
+      });
+
       const discardBtn = el('button', 'pc-btn pc-btn-ghost', 'Discard');
+      const keepBtn = el('button', 'pc-btn pc-btn-primary', 'Save & Sync');
+
       keepBtn.addEventListener('click', () => {
-        keepBtn.textContent = '\u2713 Saved';
+        keepBtn.textContent = 'Saving…';
         keepBtn.disabled = true;
         discardBtn.style.display = 'none';
         if (onConfirm) onConfirm();
-        setTimeout(() => setExpanded(false), 1500);
+        setTimeout(() => setExpanded(false), 1800);
       });
+
       discardBtn.addEventListener('click', () => {
         if (onDiscard) onDiscard();
         setExpanded(false);
       });
+
+      actions.appendChild(copyMomBtn);
       actions.appendChild(discardBtn);
       actions.appendChild(keepBtn);
       section.appendChild(actions);
@@ -281,13 +318,17 @@
       body.appendChild(section);
     }
 
-    function showSavedConfirmation() {
+    function showSavedConfirmation(syncInfo) {
       const toast = el('div', 'pc-toast');
       toast.style.borderColor = '#2F6B5E';
-      toast.appendChild(el('div', 'pc-toast-title', '\u2713 Saved locally'));
-      toast.appendChild(el('div', 'pc-toast-body', 'Meeting items recorded to this device.'));
+      toast.appendChild(el('div', 'pc-toast-title', '✓ Saved successfully'));
+      let msg = 'Meeting items and transcript recorded.';
+      if (syncInfo && syncInfo.webViewLink) {
+        msg = 'Saved to device and synced to Google Drive!';
+      }
+      toast.appendChild(el('div', 'pc-toast-body', msg));
       root.appendChild(toast);
-      setTimeout(() => toast.remove(), 4000);
+      setTimeout(() => toast.remove(), 4500);
     }
 
     document.documentElement.appendChild(host);

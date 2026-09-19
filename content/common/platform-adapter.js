@@ -77,6 +77,9 @@
       }
     }
 
+    let sessionTranscript = [];
+    let pendingTranscriptBuffer = [];
+
     let autoSaveTimeout = null;
     function scheduleIncrementalSave() {
       if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
@@ -84,11 +87,14 @@
         if (!meetingId || hasSavedSession) return;
         const commitments = buildCommitmentsPayload();
         const decisions = buildDecisionsPayload();
+        const transcriptsToFlush = pendingTranscriptBuffer.slice();
+        pendingTranscriptBuffer = [];
         sendToBackground({
           type: 'MEETING_SESSION_AUTOSAVE',
           meetingId,
           commitments,
-          decisions
+          decisions,
+          transcripts: transcriptsToFlush
         });
       }, 1500);
     }
@@ -103,6 +109,8 @@
       }
       overlay.setStatus('listening');
       recentLines.push(line);
+      sessionTranscript.push(line);
+      pendingTranscriptBuffer.push(line);
       checkDejaVu(Date.now());
 
       let updated = false;
@@ -121,11 +129,13 @@
         updated = true;
       }
 
-      if (updated && overlay) {
-        overlay.updateLiveItems({
-          commitments: sessionCommitments,
-          decisions: sessionDecisions
-        });
+      if (overlay) {
+        if (updated) {
+          overlay.updateLiveItems({
+            commitments: sessionCommitments,
+            decisions: sessionDecisions
+          });
+        }
         scheduleIncrementalSave();
       }
     }
@@ -187,14 +197,17 @@
       if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
       const commitments = buildCommitmentsPayload();
       const decisions = buildDecisionsPayload();
-      if (commitments.length === 0 && decisions.length === 0) {
+      const transcripts = pendingTranscriptBuffer.slice();
+      pendingTranscriptBuffer = [];
+      if (commitments.length === 0 && decisions.length === 0 && sessionTranscript.length === 0) {
         return sendToBackground({ type: 'MEETING_ENDED_DISCARD', meetingId });
       }
       return sendToBackground({
         type: 'MEETING_ENDED_SAVE',
         meetingId,
         commitments,
-        decisions
+        decisions,
+        transcripts
       });
     }
 
@@ -204,13 +217,22 @@
       if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
       sessionCommitments = [];
       sessionDecisions = [];
+      sessionTranscript = [];
+      pendingTranscriptBuffer = [];
       return sendToBackground({ type: 'MEETING_ENDED_DISCARD', meetingId });
     }
 
     function promptWrapUp() {
       if (!overlay) return;
+      const title = adapterConfig.getMeetingTitle ? adapterConfig.getMeetingTitle() : document.title;
       overlay.renderEndSummary(
-        { newCommitments: sessionCommitments, newDecisions: sessionDecisions },
+        {
+          newCommitments: sessionCommitments,
+          newDecisions: sessionDecisions,
+          transcript: sessionTranscript,
+          meetingTitle: title,
+          attendees
+        },
         {
           onConfirm: async () => {
             await saveSession();

@@ -10,3 +10,4 @@ node_modules/
 dist/
 build/
 *.zip
+!website/downloads/*.zip

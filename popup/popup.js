@@ -125,18 +125,36 @@ async function renderCommitments() {
   }
 }
 
+async function renderAuthStatus() {
+  const pill = document.getElementById('auth-pill');
+  if (!pill) return;
+  const userRes = await sendMessage({ type: 'SUPABASE_GET_USER' });
+  if (userRes && userRes.ok && userRes.user) {
+    const email = userRes.user.email || 'User';
+    pill.textContent = `👤 ${email.split('@')[0]}`;
+    pill.className = 'pc-pop-pill connected';
+    pill.title = `Logged in as ${email}. Click for settings & account`;
+    pill.onclick = () => chrome.runtime.openOptionsPage();
+  } else {
+    pill.textContent = '👤 Sign In';
+    pill.className = 'pc-pop-pill disconnected';
+    pill.title = 'Click to sign in with Supabase';
+    pill.onclick = () => chrome.runtime.openOptionsPage();
+  }
+}
+
 async function renderDriveStatus() {
   const pill = document.getElementById('drive-pill');
   if (!pill) return;
   const res = await sendMessage({ type: 'DRIVE_STATUS' });
   if (res && res.ok && res.status && res.status.connected) {
     pill.textContent = '☁️ Drive Connected';
-    pill.className = 'pc-pop-drive-pill connected';
+    pill.className = 'pc-pop-pill connected';
     pill.title = `Connected to Google Drive (${res.status.user || ''})`;
     pill.onclick = () => chrome.runtime.openOptionsPage();
   } else {
     pill.textContent = '☁️ Connect Drive';
-    pill.className = 'pc-pop-drive-pill disconnected';
+    pill.className = 'pc-pop-pill disconnected';
     pill.title = 'Click to connect Google Drive';
     pill.onclick = async () => {
       pill.textContent = 'Connecting…';
@@ -244,6 +262,7 @@ document.getElementById('export-data').addEventListener('click', async () => {
 });
 
 renderStatus();
+renderAuthStatus();
 renderDriveStatus();
 renderCommitments();
 renderMeetings();

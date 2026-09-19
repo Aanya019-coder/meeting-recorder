@@ -12,6 +12,7 @@ importScripts(
   '../lib/attendee-matcher.js',
   '../lib/mom-generator.js',
   '../lib/google-drive.js',
+  '../lib/supabase.js',
   '../lib/db.js'
 );
 
@@ -19,6 +20,7 @@ const DB = self.Precedent.DB;
 const AttendeeMatcher = self.Precedent.AttendeeMatcher;
 const MOMGenerator = self.Precedent.MOMGenerator;
 const GoogleDrive = self.Precedent.GoogleDrive;
+const Supabase = self.Precedent.Supabase;
 
 const DEFAULT_SETTINGS = {
   platforms: { meet: true, zoom: true, teams: true },
@@ -205,6 +207,54 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           const markdown = MOMGenerator.toMarkdown(momData);
           const plainText = MOMGenerator.toPlainText(momData);
           sendResponse({ ok: true, markdown, plainText, momData });
+          break;
+        }
+
+        case 'SUPABASE_GET_CONFIG': {
+          const config = await Supabase.getConfig();
+          sendResponse({ ok: true, config });
+          break;
+        }
+
+        case 'SUPABASE_SAVE_CONFIG': {
+          await Supabase.saveConfig({ url: message.url, anonKey: message.anonKey });
+          sendResponse({ ok: true });
+          break;
+        }
+
+        case 'SUPABASE_GET_SESSION': {
+          const session = await Supabase.getSession();
+          sendResponse({ ok: true, session });
+          break;
+        }
+
+        case 'SUPABASE_GET_USER': {
+          const user = await Supabase.getUser();
+          sendResponse({ ok: true, user });
+          break;
+        }
+
+        case 'SUPABASE_SIGN_IN': {
+          const res = await Supabase.signInWithPassword({ email: message.email, password: message.password });
+          sendResponse(res);
+          break;
+        }
+
+        case 'SUPABASE_SIGN_UP': {
+          const res = await Supabase.signUp({ email: message.email, password: message.password });
+          sendResponse(res);
+          break;
+        }
+
+        case 'SUPABASE_SIGN_IN_OTP': {
+          const res = await Supabase.signInWithOtp({ email: message.email });
+          sendResponse(res);
+          break;
+        }
+
+        case 'SUPABASE_SIGN_OUT': {
+          const res = await Supabase.signOut();
+          sendResponse(res);
           break;
         }
 

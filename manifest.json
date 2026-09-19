@@ -31,7 +31,8 @@
     "https://*.zoom.us/*",
     "https://teams.microsoft.com/*",
     "https://teams.live.com/*",
-    "https://www.googleapis.com/*"
+    "https://www.googleapis.com/*",
+    "https://*.supabase.co/*"
   ],
   "content_scripts": [
     {
@@ -45,6 +46,7 @@
         "lib/decision-extractor.js",
         "lib/attendee-matcher.js",
         "lib/mom-generator.js",
+        "lib/supabase.js",
         "content/common/caption-observer.js",
         "content/common/overlay-ui.js",
         "content/common/platform-adapter.js",
@@ -68,6 +70,7 @@
         "lib/decision-extractor.js",
         "lib/attendee-matcher.js",
         "lib/mom-generator.js",
+        "lib/supabase.js",
         "content/common/caption-observer.js",
         "content/common/overlay-ui.js",
         "content/common/platform-adapter.js",
@@ -90,6 +93,7 @@
         "lib/decision-extractor.js",
         "lib/attendee-matcher.js",
         "lib/mom-generator.js",
+        "lib/supabase.js",
         "content/common/caption-observer.js",
         "content/common/overlay-ui.js",
         "content/common/platform-adapter.js",

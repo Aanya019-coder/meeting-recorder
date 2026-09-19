@@ -63,6 +63,45 @@
     </section>
 
     <section class="pc-opt-card">
+      <h2>Account &amp; Cloud (Supabase)</h2>
+      <p class="pc-opt-help">Sign in to authenticate and sync your meeting memory across devices.</p>
+
+      <div id="supabase-user-panel" style="display: none; margin-bottom: 14px;">
+        <div class="pc-opt-row" style="align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 12.5px; color: var(--muted);">Logged in as:</div>
+            <strong id="supabase-user-email" style="font-size: 14px;">user@example.com</strong>
+          </div>
+          <button id="supabase-signout-btn" class="pc-opt-btn pc-opt-btn-danger">Sign Out</button>
+        </div>
+      </div>
+
+      <div id="supabase-login-panel">
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+          <input type="email" id="supabase-email" placeholder="Email address" class="pc-opt-input" />
+          <input type="password" id="supabase-password" placeholder="Password" class="pc-opt-input" />
+        </div>
+        <div class="pc-opt-row">
+          <button id="supabase-signin-btn" class="pc-opt-btn pc-opt-btn-primary">Sign In</button>
+          <button id="supabase-signup-btn" class="pc-opt-btn pc-opt-btn-secondary">Create Account</button>
+        </div>
+      </div>
+
+      <div id="supabase-status" class="pc-opt-help" style="margin-top: 10px; font-weight: 500;"></div>
+
+      <div style="margin-top: 12px;">
+        <details id="supabase-config-details">
+          <summary style="font-size: 11.5px; color: var(--muted); cursor: pointer;">Supabase Project Configuration (URL &amp; Anon Key)</summary>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <input type="text" id="supabase-url" placeholder="https://your-project.supabase.co" class="pc-opt-input" />
+            <input type="text" id="supabase-anon-key" placeholder="Supabase Anon Key (public)" class="pc-opt-input" />
+            <button id="supabase-save-config-btn" class="pc-opt-btn pc-opt-btn-secondary" style="align-self: flex-start;">Save Project Credentials</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="pc-opt-card">
       <h2>Your data</h2>
       <div class="pc-opt-row">
         <button id="export-btn" class="pc-opt-btn pc-opt-btn-primary">Export everything as JSON</button>

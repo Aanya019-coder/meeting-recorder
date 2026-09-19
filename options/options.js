@@ -19,6 +19,19 @@ const driveAuthBtn = document.getElementById('drive-auth-btn');
 const customClientId = document.getElementById('custom-client-id');
 const saveStatus = document.getElementById('save-status');
 
+const supabaseUserPanel = document.getElementById('supabase-user-panel');
+const supabaseUserEmail = document.getElementById('supabase-user-email');
+const supabaseSignoutBtn = document.getElementById('supabase-signout-btn');
+const supabaseLoginPanel = document.getElementById('supabase-login-panel');
+const supabaseEmailInput = document.getElementById('supabase-email');
+const supabasePasswordInput = document.getElementById('supabase-password');
+const supabaseSigninBtn = document.getElementById('supabase-signin-btn');
+const supabaseSignupBtn = document.getElementById('supabase-signup-btn');
+const supabaseStatus = document.getElementById('supabase-status');
+const supabaseUrlInput = document.getElementById('supabase-url');
+const supabaseAnonKeyInput = document.getElementById('supabase-anon-key');
+const supabaseSaveConfigBtn = document.getElementById('supabase-save-config-btn');
+
 function describeThreshold(v) {
   if (v <= 0.32) return `${v.toFixed(2)} \u2014 loose (more flags, more false positives)`;
   if (v >= 0.55) return `${v.toFixed(2)} \u2014 strict (only near-identical phrasing)`;
@@ -54,6 +67,24 @@ async function refreshDriveUI() {
   }
 }
 
+async function refreshSupabaseUI() {
+  const cfgRes = await sendMessage({ type: 'SUPABASE_GET_CONFIG' });
+  if (cfgRes && cfgRes.ok && cfgRes.config) {
+    supabaseUrlInput.value = cfgRes.config.url || '';
+    supabaseAnonKeyInput.value = cfgRes.config.anonKey || '';
+  }
+
+  const userRes = await sendMessage({ type: 'SUPABASE_GET_USER' });
+  if (userRes && userRes.ok && userRes.user) {
+    supabaseUserPanel.style.display = 'block';
+    supabaseLoginPanel.style.display = 'none';
+    supabaseUserEmail.textContent = userRes.user.email || 'Logged in user';
+  } else {
+    supabaseUserPanel.style.display = 'none';
+    supabaseLoginPanel.style.display = 'block';
+  }
+}
+
 async function load() {
   const res = await sendMessage({ type: 'GET_SETTINGS' });
   if (!res.ok) return;
@@ -73,6 +104,7 @@ async function load() {
   });
 
   await refreshDriveUI();
+  await refreshSupabaseUI();
 }
 
 function flashSaved() {
@@ -135,6 +167,72 @@ document.getElementById('clear-btn').addEventListener('click', async () => {
   if (!confirmed) return;
   await sendMessage({ type: 'CLEAR_ALL_DATA' });
   flashSaved();
+});
+
+supabaseSaveConfigBtn.addEventListener('click', async () => {
+  const url = supabaseUrlInput.value.trim();
+  const anonKey = supabaseAnonKeyInput.value.trim();
+  await sendMessage({ type: 'SUPABASE_SAVE_CONFIG', url, anonKey });
+  supabaseStatus.style.color = 'var(--accent-green)';
+  supabaseStatus.textContent = 'Supabase configuration saved.';
+  setTimeout(() => { supabaseStatus.textContent = ''; }, 2500);
+});
+
+supabaseSigninBtn.addEventListener('click', async () => {
+  const email = supabaseEmailInput.value.trim();
+  const password = supabasePasswordInput.value;
+  if (!email || !password) {
+    supabaseStatus.style.color = 'var(--accent-rose)';
+    supabaseStatus.textContent = 'Please enter both email and password.';
+    return;
+  }
+  supabaseSigninBtn.textContent = 'Signing in…';
+  supabaseSigninBtn.disabled = true;
+  const res = await sendMessage({ type: 'SUPABASE_SIGN_IN', email, password });
+  supabaseSigninBtn.textContent = 'Sign In';
+  supabaseSigninBtn.disabled = false;
+  if (res && res.ok) {
+    supabaseStatus.style.color = 'var(--accent-green)';
+    supabaseStatus.textContent = 'Signed in successfully!';
+    supabasePasswordInput.value = '';
+    await refreshSupabaseUI();
+  } else {
+    supabaseStatus.style.color = 'var(--accent-rose)';
+    supabaseStatus.textContent = (res && res.error) || 'Failed to sign in. Check credentials and configuration.';
+  }
+});
+
+supabaseSignupBtn.addEventListener('click', async () => {
+  const email = supabaseEmailInput.value.trim();
+  const password = supabasePasswordInput.value;
+  if (!email || !password) {
+    supabaseStatus.style.color = 'var(--accent-rose)';
+    supabaseStatus.textContent = 'Please enter both email and password.';
+    return;
+  }
+  supabaseSignupBtn.textContent = 'Creating…';
+  supabaseSignupBtn.disabled = true;
+  const res = await sendMessage({ type: 'SUPABASE_SIGN_UP', email, password });
+  supabaseSignupBtn.textContent = 'Create Account';
+  supabaseSignupBtn.disabled = false;
+  if (res && res.ok) {
+    supabaseStatus.style.color = 'var(--accent-green)';
+    supabaseStatus.textContent = res.message || 'Account created! If confirmation is required, check your email.';
+    if (res.user && res.session) {
+      await refreshSupabaseUI();
+    }
+  } else {
+    supabaseStatus.style.color = 'var(--accent-rose)';
+    supabaseStatus.textContent = (res && res.error) || 'Failed to create account.';
+  }
+});
+
+supabaseSignoutBtn.addEventListener('click', async () => {
+  await sendMessage({ type: 'SUPABASE_SIGN_OUT' });
+  await refreshSupabaseUI();
+  supabaseStatus.style.color = 'var(--accent-green)';
+  supabaseStatus.textContent = 'Signed out.';
+  setTimeout(() => { supabaseStatus.textContent = ''; }, 2000);
 });
 
 load();

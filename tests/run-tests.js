@@ -14,17 +14,10 @@ const AttendeeMatcher = require('../lib/attendee-matcher.js');
 
 let passedCount = 0;
 let totalCount = 0;
+const testQueue = [];
 
 function test(name, fn) {
-  totalCount++;
-  try {
-    fn();
-    console.log(`  ✓ ${name}`);
-    passedCount++;
-  } catch (err) {
-    console.error(`  ✗ ${name}`);
-    console.error(`    Error: ${err.message}`);
-  }
+  testQueue.push({ name, fn });
 }
 
 console.log('=== Running Precedent Unit Tests ===\n');
@@ -286,9 +279,50 @@ test('generates clean PlainText MOM', () => {
 });
 
 // -------------------------------------------------------------
-// Summary
+// Supabase Auth Tests
 // -------------------------------------------------------------
-console.log(`\n=== Results: ${passedCount}/${totalCount} tests passed ===`);
-if (passedCount !== totalCount) {
-  process.exit(1);
-}
+console.log('\n--- Supabase Auth ---');
+
+const Supabase = require('../lib/supabase.js');
+
+test('Supabase client initializes with default methods', () => {
+  assert(typeof Supabase.getConfig === 'function');
+  assert(typeof Supabase.saveConfig === 'function');
+  assert(typeof Supabase.signUp === 'function');
+  assert(typeof Supabase.signInWithPassword === 'function');
+  assert(typeof Supabase.signInWithOtp === 'function');
+  assert(typeof Supabase.signOut === 'function');
+  assert(typeof Supabase.getSession === 'function');
+  assert(typeof Supabase.getUser === 'function');
+});
+
+test('Supabase client handles empty config gracefully without throwing', async () => {
+  const cfg = await Supabase.getConfig();
+  assert(typeof cfg === 'object');
+  assert(cfg.url !== undefined);
+  assert(cfg.anonKey !== undefined);
+
+  // Signing in without configured URL returns clean error object
+  const loginRes = await Supabase.signInWithPassword({ email: 'test@example.com', password: 'secret' });
+  assert.strictEqual(loginRes.ok, false);
+  assert(loginRes.error.includes('Supabase URL and Anon Key are not configured'));
+});
+
+(async () => {
+  for (const t of testQueue) {
+    totalCount++;
+    try {
+      await t.fn();
+      console.log(`  ✓ ${t.name}`);
+      passedCount++;
+    } catch (err) {
+      console.error(`  ✗ ${t.name}`);
+      console.error(`    Error: ${err.message}`);
+    }
+  }
+
+  console.log(`\n=== Results: ${passedCount}/${totalCount} tests passed ===`);
+  if (passedCount !== totalCount) {
+    process.exit(1);
+  }
+})();

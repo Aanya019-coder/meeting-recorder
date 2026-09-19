@@ -183,8 +183,9 @@ body {
   justify-content: space-between;
 }
 
+.pc-pop-pill,
 .pc-pop-drive-pill {
-  font-size: 11px;
+  font-size: 10.5px;
   padding: 2px 7px;
   border-radius: 999px;
   cursor: pointer;
@@ -192,13 +193,19 @@ body {
   color: var(--muted);
   border: 1px solid var(--border);
   transition: all 0.2s ease;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+.pc-pop-pill.connected,
 .pc-pop-drive-pill.connected {
   background: rgba(47,107,94,0.15);
   color: #2F6B5E;
   border-color: rgba(47,107,94,0.3);
   font-weight: 500;
 }
+.pc-pop-pill.disconnected:hover,
 .pc-pop-drive-pill.disconnected:hover {
   background: rgba(47,107,94,0.1);
   color: #2F6B5E;

@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/website/index.html" },
+    { "source": "/extension", "destination": "/website/index.html" },
+    { "source": "/style.css", "destination": "/website/style.css" },
+    { "source": "/app.js", "destination": "/website/app.js" },
+    { "source": "/downloads/(.*)", "destination": "/website/downloads/$1" },
+    { "source": "/icons/(.*)", "destination": "/website/icons/$1" },
+    { "source": "/privacy", "destination": "/website/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/downloads/(.*)",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"precedent-extension.zip\""
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ]
+}

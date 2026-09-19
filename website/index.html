@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Precedent — The Local-First AI Meeting Memory Companion</title>
+  <meta name="description" content="Never forget a promise. Never relitigate a decision. Precedent captures unlimited meeting transcripts, generates Minutes of Meeting (MOM), detects déjà vu in real-time, and syncs with Google Drive & Supabase." />
+
+  <!-- OpenGraph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Precedent — The Local-First AI Meeting Memory Companion" />
+  <meta property="og:description" content="Unlimited meeting recording, automatic MOM generator, déjà vu detection, and cloud sync for Google Meet, Zoom, and Microsoft Teams." />
+  <meta property="og:url" content="https://meeting-recorder.vercel.app/" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="icons/icon48.png" />
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="site-nav">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <span class="brand-icon">P</span>
+        <span class="brand-name">Precedent</span>
+        <span class="brand-pill">v1.2</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#demo">Live Demo</a>
+        <a href="#features">Features</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="#installation">Installation</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#changelog">Changelog</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://github.com/Aanya019-coder/meeting-recorder" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+        <a href="downloads/precedent-extension.zip" download="precedent-extension.zip" class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          <span>Download ZIP</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-glow"></div>
+    <div class="container hero-container">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>Google Meet &bull; Zoom Web &bull; Microsoft Teams</span>
+      </div>
+
+      <h1 class="hero-title">
+        Never forget a promise.<br />
+        <em>Never relitigate a decision.</em>
+      </h1>
+
+      <p class="hero-subtitle">
+        The local-first AI memory companion for your calls. Captures unlimited live meeting transcripts, extracts commitments with due dates, alerts you when settled decisions are reopened, and auto-syncs Minutes of Meeting (MOM) to Google Drive and Supabase.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="downloads/precedent-extension.zip" download="precedent-extension.zip" class="btn btn-lg btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          <span>Download Extension (.ZIP)</span>
+          <span class="btn-subtext">Free &bull; Manifest V3</span>
+        </a>
+
+        <a href="https://github.com/Aanya019-coder/meeting-recorder" target="_blank" rel="noopener" class="btn btn-lg btn-secondary">
+          <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>Star on GitHub</span>
+        </a>
+
+        <a href="#demo" class="btn btn-lg btn-ghost">
+          <span>Try Interactive Simulator &darr;</span>
+        </a>
+      </div>
+
+      <!-- Trust Metrics -->
+      <div class="hero-metrics">
+        <div class="metric-item">
+          <span class="metric-num">100%</span>
+          <span class="metric-label">Local-First Privacy</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric-item">
+          <span class="metric-num">0ms</span>
+          <span class="metric-label">Server Latency</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric-item">
+          <span class="metric-num">&infin; hrs</span>
+          <span class="metric-label">Unlimited Recording</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric-item">
+          <span class="metric-num">3 Platforms</span>
+          <span class="metric-label">Meet, Zoom, Teams</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live In-Browser Demo / Simulator -->
+  <section id="demo" class="section demo-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interactive Simulator</span>
+        <h2 class="section-title">See Precedent Think in Real Time</h2>
+        <p class="section-subtitle">
+          Test Precedent's commitment extraction and déjà vu detection engine directly in your browser. Type a spoken meeting phrase or select a preset below:
+        </p>
+      </div>
+
+      <div class="demo-card">
+        <!-- Preset selectors -->
+        <div class="demo-presets">
+          <span class="preset-label">Try sample lines:</span>
+          <button class="preset-chip active" data-phrase="I will refactor the authentication endpoints and share the docs by Friday" data-speaker="Alex">
+            "I will refactor auth by Friday"
+          </button>
+          <button class="preset-chip" data-phrase="We have decided to stick with PostgreSQL and not migrate to DynamoDB" data-speaker="Priya">
+            "We decided on PostgreSQL"
+          </button>
+          <button class="preset-chip" data-phrase="Sarah, can you review the Figma mobile mockups by EOD tomorrow?" data-speaker="David">
+            "Sarah, review Figma by EOD"
+          </button>
+          <button class="preset-chip" data-phrase="Maybe we could think about reconsidering the pricing tiers later" data-speaker="Jordan">
+            "Maybe we reconsider pricing..." (Weak)
+          </button>
+        </div>
+
+        <!-- Input Box -->
+        <div class="demo-input-row">
+          <div class="speaker-input-wrap">
+            <label for="demo-speaker">Speaker</label>
+            <input type="text" id="demo-speaker" value="Alex" placeholder="Speaker name" />
+          </div>
+          <div class="speech-input-wrap">
+            <label for="demo-text">Spoken Transcript</label>
+            <input type="text" id="demo-text" value="I will refactor the authentication endpoints and share the docs by Friday" placeholder="Type what someone said..." />
+          </div>
+          <button id="demo-analyze-btn" class="btn btn-primary demo-analyze-btn">Analyze Phrase</button>
+        </div>
+
+        <!-- Live Results Visualization -->
+        <div class="demo-results-grid">
+          <!-- Commitment Box -->
+          <div class="result-box">
+            <div class="result-header">
+              <span class="result-badge" id="commitment-badge">Commitment Detected</span>
+              <span class="result-type">Action Item</span>
+            </div>
+            <div class="result-body" id="commitment-output">
+              <div class="result-main-text" id="commitment-task">refactor the authentication endpoints and share the docs</div>
+              <div class="result-meta-row">
+                <span class="meta-tag" id="commitment-owner">Owner: Alex</span>
+                <span class="meta-tag highlight" id="commitment-due">Due: this coming friday</span>
+                <span class="meta-tag" id="commitment-confidence">Confidence: high</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Déjà Vu Box -->
+          <div class="result-box">
+            <div class="result-header">
+              <span class="result-badge alert" id="dejavu-badge">Déjà Vu Alert</span>
+              <span class="result-type">Precedent Match</span>
+            </div>
+            <div class="result-body" id="dejavu-output">
+              <div class="result-main-text" id="dejavu-text">"Settled on PostgreSQL instead of DynamoDB for v1"</div>
+              <div class="result-meta-row">
+                <span class="meta-tag alert" id="dejavu-score">Similarity: 0.84</span>
+                <span class="meta-tag" id="dejavu-date">Past Meeting: 14 days ago</span>
+                <span class="meta-tag" id="dejavu-attendees">Overlap: Priya, Alex</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated In-Call Overlay Banner -->
+        <div class="simulated-overlay-wrap">
+          <div class="simulated-overlay-header">
+            <span>Simulated In-Call Floating Banner (Google Meet / Zoom / Teams)</span>
+            <span class="pulse-rec">&bull; REC ACTIVE</span>
+          </div>
+          <div class="simulated-banner" id="simulated-banner">
+            <div class="sim-banner-left">
+              <span class="sim-icon" id="sim-icon">&bull;</span>
+              <div class="sim-content">
+                <strong id="sim-title">Action item tracked</strong>
+                <span id="sim-desc">Alex: refactor the authentication endpoints (Due Friday)</span>
+              </div>
+            </div>
+            <div class="sim-banner-actions">
+              <button class="sim-btn sim-btn-primary">Acknowledge</button>
+              <button class="sim-btn sim-btn-ghost">Dismiss</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Grid -->
+  <section id="features" class="section features-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Core Capabilities</span>
+        <h2 class="section-title">Built for Professionals Who Meet to Get Things Done</h2>
+        <p class="section-subtitle">
+          Engineered as a lightweight, privacy-first companion that sits directly inside your browser without running invasive meeting bot accounts.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <!-- Card 1 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrap">
+            <span class="feature-emoji">🎙️</span>
+          </div>
+          <h3 class="feature-title">Unlimited Meeting Recording</h3>
+          <p class="feature-text">
+            Captures every spoken line via browser live captions. Employs a chunked, streaming IndexedDB pipeline with zero audio/video memory bloat, allowing marathon 4+ hour calls without slowing down your computer.
+          </p>
+          <ul class="feature-bullets">
+            <li>No artificial 1-hour recording caps</li>
+            <li>No bot invitations required in calls</li>
+            <li>Zero memory leaks with streaming buffer</li>
+          </ul>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="feature-card highlight-card">
+          <div class="feature-icon-wrap">
+            <span class="feature-emoji">📋</span>
+          </div>
+          <h3 class="feature-title">Automated Minutes of Meeting (MOM)</h3>
+          <p class="feature-text">
+            Converts entire meetings into pristine, structured Minutes of Meeting within seconds. Formatted as professional Markdown or clean Plaintext for instant sharing in Slack, Notion, or Email.
+          </p>
+          <ul class="feature-bullets">
+            <li>Executive Summary &amp; Attendee Roster</li>
+            <li>Numbered list of settled agreements</li>
+            <li>Action item tables with owners &amp; deadlines</li>
+          </ul>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrap">
+            <span class="feature-emoji">⚡</span>
+          </div>
+          <h3 class="feature-title">Real-Time Déjà Vu Detection</h3>
+          <p class="feature-text">
+            Prevents teams from wasting time re-debating topics settled weeks ago. Powered by a 512-dimension local feature-hashing vectorizer that flags duplicate decisions live as you speak.
+          </p>
+          <ul class="feature-bullets">
+            <li>Instant in-call alert with prior meeting citation</li>
+            <li>Attendee overlap &amp; date context</li>
+            <li>Fully customizable similarity sensitivity</li>
+          </ul>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrap">
+            <span class="feature-emoji">☁️</span>
+          </div>
+          <h3 class="feature-title">Google Drive Cloud Sync</h3>
+          <p class="feature-text">
+            Automatically backs up structured MOM documents and full transcripts to a private "Precedent Meeting Notes" folder in your Google Drive using the least-privilege <code>drive.file</code> scope.
+          </p>
+          <ul class="feature-bullets">
+            <li>Zero access to your other Google Drive files</li>
+            <li>Auto-uploads when meeting tab wraps up</li>
+            <li>Direct web links to view saved documents</li>
+          </ul>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrap">
+            <span class="feature-emoji">🔐</span>
+          </div>
+          <h3 class="feature-title">Supabase Authentication &amp; Sync</h3>
+          <p class="feature-text">
+            Connect your Supabase project with zero dependencies. Securely manage user sessions, cross-device commitment syncing, and password or magic link authentication directly in Manifest V3.
+          </p>
+          <ul class="feature-bullets">
+            <li>Pre-configured with public anon key support</li>
+            <li>Automatic session refresh in service worker</li>
+            <li>100% offline fallback when disconnected</li>
+          </ul>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrap">
+            <span class="feature-emoji">🛡️</span>
+          </div>
+          <h3 class="feature-title">100% Local-First Privacy</h3>
+          <p class="feature-text">
+            Your audio and video never leave your machine. Precedent processes live caption text locally in browser memory. No third-party LLM providers sniffing your meeting conversations.
+          </p>
+          <ul class="feature-bullets">
+            <li>Zero analytics trackers or advertising IDs</li>
+            <li>Granular data retention (30 to 365 days or forever)</li>
+            <li>One-click JSON export &amp; instant wipe button</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots & Mockups Section -->
+  <section id="screenshots" class="section screenshots-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interface Showcase</span>
+        <h2 class="section-title">Designed for Invisible Flow &amp; Instant Utility</h2>
+        <p class="section-subtitle">
+          Precedent stays out of your way until it has something crucial to show you.
+        </p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="screenshot-tabs">
+        <button class="tab-btn active" data-tab="overlay">In-Call Floating Overlay</button>
+        <button class="tab-btn" data-tab="popup">Toolbar Popup &amp; MOM</button>
+        <button class="tab-btn" data-tab="options">Settings &amp; Cloud Sync</button>
+      </div>
+
+      <!-- Tab 1: In-Call Overlay -->
+      <div class="tab-panel active" id="tab-overlay">
+        <div class="mockup-frame">
+          <div class="mockup-header">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+            <span class="mockup-title">Google Meet &bull; Sprint Planning Call</span>
+          </div>
+          <div class="mockup-screen meet-screen">
+            <div class="fake-video-grid">
+              <div class="fake-video-tile">
+                <div class="fake-avatar">AP</div>
+                <span>Alex Rivera (Host)</span>
+              </div>
+              <div class="fake-video-tile">
+                <div class="fake-avatar secondary">PS</div>
+                <span>Priya Sharma</span>
+              </div>
+              <div class="fake-video-tile">
+                <div class="fake-avatar tertiary">DK</div>
+                <span>David Kim</span>
+              </div>
+            </div>
+
+            <!-- In-call Shadow DOM UI -->
+            <div class="in-call-widget-demo">
+              <div class="in-call-badge-bar">
+                <span class="rec-indicator">&bull; PRECEDENT LISTENING</span>
+                <span class="badge-count">2 promises &bull; 1 déjà vu alert</span>
+              </div>
+
+              <!-- Alert card -->
+              <div class="in-call-alert-card">
+                <div class="alert-icon-col">⚠️</div>
+                <div class="alert-text-col">
+                  <strong>Déjà Vu Detected (84% similarity)</strong>
+                  <p>"We decided to stick with PostgreSQL and not migrate to DynamoDB" was settled on Sep 5 with Priya &amp; David.</p>
+                </div>
+                <button class="in-call-action-btn">Cite Past Decision</button>
+              </div>
+
+              <!-- Wrap up bar -->
+              <div class="in-call-wrapup-bar">
+                <span>Meeting wrapping up?</span>
+                <button class="in-call-save-btn">Wrap Up &amp; Save MOM</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Toolbar Popup -->
+      <div class="tab-panel" id="tab-popup">
+        <div class="mockup-frame popup-frame">
+          <div class="mockup-header">
+            <span class="mockup-title">Precedent Browser Popup</span>
+          </div>
+          <div class="popup-preview-box">
+            <div class="pop-demo-header">
+              <div class="pop-demo-row">
+                <span class="pop-demo-wordmark">Precedent</span>
+                <div class="pop-demo-pills">
+                  <span class="pop-pill-green">👤 alex@acme.com</span>
+                  <span class="pop-pill-green">☁️ Drive Connected</span>
+                </div>
+              </div>
+              <span class="pop-demo-tagline">Unlimited memory &bull; MOM &bull; Cloud sync</span>
+            </div>
+
+            <div class="pop-demo-call-banner">
+              <div class="pop-demo-row">
+                <strong>Sprint Planning Call</strong>
+                <span class="pop-tag">3 captured</span>
+              </div>
+              <button class="pop-save-btn">Wrap Up &amp; Copy MOM</button>
+            </div>
+
+            <div class="pop-demo-section">
+              <span class="pop-sec-title">OPEN COMMITMENTS</span>
+              <div class="pop-item">
+                <span class="pop-check">&check;</span>
+                <div>
+                  <strong>Alex: Refactor auth endpoints</strong>
+                  <span class="pop-meta">Due Friday &bull; Sprint Planning Call</span>
+                </div>
+              </div>
+              <div class="pop-item">
+                <span class="pop-check">&check;</span>
+                <div>
+                  <strong>Sarah: Review Figma mobile mockups</strong>
+                  <span class="pop-meta">Due Tomorrow &bull; Design Sync</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pop-demo-section">
+              <span class="pop-sec-title">RECENT MEETINGS</span>
+              <div class="pop-item-meeting">
+                <div class="pop-demo-row">
+                  <strong>Architecture Council</strong>
+                  <span class="pop-meta">Yesterday &bull; 4 attendees</span>
+                </div>
+                <div class="pop-btn-row">
+                  <button class="pop-mini-btn">📋 Copy MOM</button>
+                  <button class="pop-mini-btn">☁️ Drive Sync</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Options Dashboard -->
+      <div class="tab-panel" id="tab-options">
+        <div class="mockup-frame">
+          <div class="mockup-header">
+            <span class="mockup-title">Precedent Settings &amp; Cloud Dashboard</span>
+          </div>
+          <div class="options-preview-box">
+            <div class="opt-preview-card">
+              <h4>Platform Integrations</h4>
+              <label class="opt-check"><input type="checkbox" checked disabled /> Google Meet</label>
+              <label class="opt-check"><input type="checkbox" checked disabled /> Zoom Web Client</label>
+              <label class="opt-check"><input type="checkbox" checked disabled /> Microsoft Teams Web</label>
+            </div>
+
+            <div class="opt-preview-card">
+              <h4>Google Drive Auto-Sync</h4>
+              <p>Connected as <strong>alex@acme.com</strong> &bull; Backing up to private folder "Precedent Meeting Notes".</p>
+              <label class="opt-check"><input type="checkbox" checked disabled /> Auto-upload MOM &amp; Transcripts when meetings end</label>
+            </div>
+
+            <div class="opt-preview-card">
+              <h4>Supabase Cloud Authentication</h4>
+              <p>Logged in as <strong>alex@acme.com</strong> &bull; Endpoint: <code>https://dnwttcvuzohljotzgozn.supabase.co</code></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step-by-Step Installation Guide -->
+  <section id="installation" class="section install-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Quick Setup</span>
+        <h2 class="section-title">Install in 60 Seconds</h2>
+        <p class="section-subtitle">
+          Precedent runs as a Manifest V3 developer extension in Google Chrome, Brave, Arc, or Microsoft Edge.
+        </p>
+      </div>
+
+      <div class="install-steps-grid">
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h3 class="step-title">Download &amp; Extract ZIP</h3>
+          <p class="step-text">
+            Download the pre-packaged release ZIP archive and extract it to any convenient folder on your computer (e.g. <code>Downloads/precedent-extension</code>).
+          </p>
+          <a href="downloads/precedent-extension.zip" download="precedent-extension.zip" class="btn btn-sm btn-primary">
+            Download precedent-extension.zip
+          </a>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h3 class="step-title">Open Chrome Extensions</h3>
+          <p class="step-text">
+            Open a new tab in Chrome, paste the following URL into your address bar, and press Enter:
+          </p>
+          <div class="code-snippet">
+            <code>chrome://extensions</code>
+            <button class="copy-btn" data-copy="chrome://extensions" title="Copy to clipboard">Copy</button>
+          </div>
+          <p class="step-subtext">Toggle on <strong>"Developer mode"</strong> in the top-right corner.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h3 class="step-title">Load Unpacked Extension</h3>
+          <p class="step-text">
+            Click the <strong>"Load unpacked"</strong> button in the top-left corner and select the extracted <code>precedent-extension</code> folder.
+          </p>
+          <div class="step-badge-highlight">&check; Precedent icon will appear in your extensions bar</div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <h3 class="step-title">Join a Call &amp; Turn on Captions</h3>
+          <p class="step-text">
+            Open Google Meet, Zoom Web, or Microsoft Teams. Join any meeting and enable <strong>Live Captions [CC]</strong>. Precedent activates automatically!
+          </p>
+          <div class="step-badge-highlight">&bull; Floating overlay appears with real-time memory</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy Policy Section -->
+  <section id="privacy" class="section privacy-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Privacy Architecture</span>
+        <h2 class="section-title">Your Meetings Belong to You</h2>
+        <p class="section-subtitle">
+          Built according to strict zero-telemetry and local-first principles. Transparent, verifiable, and open source.
+        </p>
+      </div>
+
+      <div class="privacy-card">
+        <div class="privacy-point">
+          <span class="privacy-icon">🔒</span>
+          <div>
+            <h4>Local-Only In-Browser Processing</h4>
+            <p>
+              Precedent reads live caption text generated by your browser. No audio or video streams are ever recorded, encoded, or transmitted to any external server.
+            </p>
+          </div>
+        </div>
+
+        <div class="privacy-point">
+          <span class="privacy-icon">📂</span>
+          <div>
+            <h4>Restricted Google Drive Permission</h4>
+            <p>
+              When you connect Google Drive, Precedent requests only the narrow <code>drive.file</code> scope. It can only read and write files created by itself in the "Precedent Meeting Notes" folder, with zero access to your existing files or folders.
+            </p>
+          </div>
+        </div>
+
+        <div class="privacy-point">
+          <span class="privacy-icon">🚫</span>
+          <div>
+            <h4>No Third-Party Analytics or Trackers</h4>
+            <p>
+              Precedent contains zero Google Analytics, Meta Pixels, advertising SDKs, or behavioral telemetry. Your IndexedDB database resides solely on your computer.
+            </p>
+          </div>
+        </div>
+
+        <div class="privacy-point">
+          <span class="privacy-icon">🗑️</span>
+          <div>
+            <h4>Full User Control &amp; Deletion</h4>
+            <p>
+              You can set automatic pruning from 30 to 365 days, export your entire meeting history in a single JSON file, or permanently delete all data with one click in extension settings.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Changelog Section -->
+  <section id="changelog" class="section changelog-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Release History</span>
+        <h2 class="section-title">Changelog &amp; Updates</h2>
+      </div>
+
+      <div class="changelog-timeline">
+        <!-- Release v1.2.0 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-version">v1.2.0</span>
+              <span class="timeline-tag current">Latest</span>
+              <span class="timeline-date">September 2026</span>
+            </div>
+            <h4 class="timeline-title">Supabase Authentication &amp; Multi-Device Cloud Sync</h4>
+            <ul class="timeline-list">
+              <li>Added native, zero-dependency Supabase GoTrue Auth client in service worker.</li>
+              <li>Support for email/password signup, passwordless magic links, and automatic token refresh.</li>
+              <li>Pre-configured project credentials with instant out-of-the-box authentication.</li>
+              <li>Toolbar popup Auth Status Pill with direct settings navigation.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Release v1.1.0 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-version">v1.1.0</span>
+              <span class="timeline-date">September 2026</span>
+            </div>
+            <h4 class="timeline-title">Unlimited Recording, MOM Generator &amp; Google Drive Backup</h4>
+            <ul class="timeline-list">
+              <li>IndexedDB schema v2 with dedicated streaming transcripts store.</li>
+              <li>Automated Minutes of Meeting (MOM) generation in GitHub Markdown and Plaintext formats.</li>
+              <li>Direct Google Drive integration using restricted <code>drive.file</code> scope.</li>
+              <li>In-call wrap-up auto-save protecting against accidental tab closure.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Release v1.0.0 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-version">v1.0.0</span>
+              <span class="timeline-date">September 2026</span>
+            </div>
+            <h4 class="timeline-title">Initial Launch: Déjà Vu Detection &amp; Promise Memory</h4>
+            <ul class="timeline-list">
+              <li>Real-time caption observation across Google Meet, Zoom Web, and Microsoft Teams.</li>
+              <li>Natural language commitment extraction with relative due date parsing.</li>
+              <li>512-dimensional feature-hashing vectorizer for settled decision déjà vu matching.</li>
+              <li>Floating in-call shadow DOM notification banner.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2 class="cta-title">Upgrade Your Meetings Today</h2>
+        <p class="cta-subtitle">
+          Free, open-source, and private forever. Start capturing commitments and stopping circular debates right now.
+        </p>
+        <div class="cta-buttons">
+          <a href="downloads/precedent-extension.zip" download="precedent-extension.zip" class="btn btn-lg btn-primary">
+            Download Extension (.ZIP)
+          </a>
+          <a href="https://github.com/Aanya019-coder/meeting-recorder" target="_blank" rel="noopener" class="btn btn-lg btn-secondary">
+            View Source on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-left">
+        <div class="brand">
+          <span class="brand-icon">P</span>
+          <span class="brand-name">Precedent</span>
+        </div>
+        <p class="footer-desc">
+          The local-first meeting memory companion. Never forget a promise. Never relitigate a decision.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="#demo">Live Demo</a>
+          <a href="#features">Features</a>
+          <a href="#screenshots">Screenshots</a>
+          <a href="#installation">Installation</a>
+        </div>
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <a href="https://github.com/Aanya019-coder/meeting-recorder" target="_blank" rel="noopener">GitHub Repository</a>
+          <a href="#privacy">Privacy Policy</a>
+          <a href="#changelog">Changelog</a>
+          <a href="downloads/precedent-extension.zip" download>Download ZIP</a>
+        </div>
+        <div class="footer-col">
+          <h5>Platforms</h5>
+          <span>Google Meet</span>
+          <span>Zoom Web</span>
+          <span>Microsoft Teams</span>
+          <span>Google Chrome</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom container">
+      <p>&copy; 2026 Precedent Extension. Open Source under MIT License.</p>
+      <p>Crafted by <a href="https://github.com/Aanya019-coder" target="_blank" rel="noopener">Aanya019-coder</a>.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

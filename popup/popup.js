@@ -30,6 +30,7 @@ async function renderStatus() {
   const activeCallTitle = document.getElementById('active-call-title');
   const activeCallStats = document.getElementById('active-call-stats');
   const activeCallSaveBtn = document.getElementById('active-call-save-btn');
+  const activeCallRecBtn = document.getElementById('active-call-rec-btn');
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const url = tab && tab.url ? tab.url : '';
@@ -51,6 +52,30 @@ async function renderStatus() {
       activeCallSection.style.display = 'flex';
       activeCallTitle.textContent = status.title || 'In-progress meeting';
       activeCallStats.textContent = `${status.commitmentsCount || 0} promise(s), ${status.decisionsCount || 0} decision(s)`;
+
+      if (activeCallRecBtn) {
+        if (status.recordingState === 'recording') {
+          activeCallRecBtn.textContent = '⏹️ Stop Recording';
+          activeCallRecBtn.style.background = '#b4554a';
+          activeCallRecBtn.onclick = async () => {
+            activeCallRecBtn.textContent = 'Stopping…';
+            await sendTabMessage(tab.id, { type: 'STOP_VIDEO_RECORDING' });
+            renderStatus();
+          };
+        } else {
+          activeCallRecBtn.textContent = '🔴 Record Video';
+          activeCallRecBtn.style.background = 'rgba(255,255,255,0.08)';
+          activeCallRecBtn.onclick = async () => {
+            activeCallRecBtn.textContent = 'Prompting…';
+            const r = await sendTabMessage(tab.id, { type: 'START_VIDEO_RECORDING' });
+            if (r && r.ok) {
+              window.close();
+            } else {
+              activeCallRecBtn.textContent = '🔴 Record Video';
+            }
+          };
+        }
+      }
 
       activeCallSaveBtn.onclick = async () => {
         activeCallSaveBtn.textContent = 'Saving\u2026';

@@ -27,7 +27,7 @@
       <a href="#" class="brand">
         <span class="brand-icon">P</span>
         <span class="brand-name">Precedent</span>
-        <span class="brand-pill">v1.2</span>
+        <span class="brand-pill">v1.3</span>
       </a>
 
       <nav class="nav-links">
@@ -236,16 +236,16 @@
         <!-- Card 1 -->
         <div class="feature-card">
           <div class="feature-icon-wrap">
-            <span class="feature-emoji">🎙️</span>
+            <span class="feature-emoji">🎥</span>
           </div>
-          <h3 class="feature-title">Unlimited Meeting Recording</h3>
+          <h3 class="feature-title">Full Screen Video &amp; Audio Recording</h3>
           <p class="feature-text">
-            Captures every spoken line via browser live captions. Employs a chunked, streaming IndexedDB pipeline with zero audio/video memory bloat, allowing marathon 4+ hour calls without slowing down your computer.
+            Record full-screen meeting video with high-definition WebM output and zero third-party software. Web Audio API mixes your microphone and remote participants' audio into a single balanced soundtrack.
           </p>
           <ul class="feature-bullets">
-            <li>No artificial 1-hour recording caps</li>
-            <li>No bot invitations required in calls</li>
-            <li>Zero memory leaks with streaming buffer</li>
+            <li>High-definition screen capture via getDisplayMedia</li>
+            <li>Mixed microphone + attendee audio tracks</li>
+            <li>One-click instant download &amp; safe exit protection</li>
           </ul>
         </div>
 
@@ -618,13 +618,31 @@
       </div>
 
       <div class="changelog-timeline">
+        <!-- Release v1.3.0 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-version">v1.3.0</span>
+              <span class="timeline-tag current">Latest</span>
+              <span class="timeline-date">September 2026</span>
+            </div>
+            <h4 class="timeline-title">Full Screen Meeting Video &amp; Audio Recording</h4>
+            <ul class="timeline-list">
+              <li>High-definition full-screen screen capture via <code>navigator.mediaDevices.getDisplayMedia</code>.</li>
+              <li>Multi-track audio mixing: blends microphone input with call attendee audio via Web Audio <code>AudioContext</code>.</li>
+              <li>Live in-call overlay recording controller with timer (<code>🔴 REC 00:04:15</code>), pause, resume, and stop buttons.</li>
+              <li>One-click instant WebM download and safe auto-save on tab close.</li>
+            </ul>
+          </div>
+        </div>
+
         <!-- Release v1.2.0 -->
         <div class="timeline-item">
           <div class="timeline-dot"></div>
           <div class="timeline-content">
             <div class="timeline-header">
               <span class="timeline-version">v1.2.0</span>
-              <span class="timeline-tag current">Latest</span>
               <span class="timeline-date">September 2026</span>
             </div>
             <h4 class="timeline-title">Supabase Authentication &amp; Multi-Device Cloud Sync</h4>

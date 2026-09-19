@@ -77,6 +77,8 @@
     let liveCommitments = [];
     let liveDecisions = [];
     let onWrapUpCallback = null;
+    let recordingState = 'inactive';
+    let recordingDuration = '00:00';
 
     function setExpanded(next) {
       expanded = next;
@@ -110,7 +112,9 @@
         listening: WORDMARK,
         'no-captions': WORDMARK + ' \u00B7 turn on captions'
       };
-      pillLabel.textContent = labels[status] || WORDMARK;
+      if (recordingState === 'inactive') {
+        pillLabel.textContent = labels[status] || WORDMARK;
+      }
     }
 
     function clearBody() {
@@ -121,6 +125,87 @@
       clearBody();
       const hasLive = liveCommitments.length > 0 || liveDecisions.length > 0;
       wrapUpBtn.style.display = hasLive ? 'inline-block' : 'none';
+
+      // Section 0: Video Recording Control Bar
+      const VR = global.Precedent && global.Precedent.VideoRecorder;
+      if (VR && VR.isSupported()) {
+        const recBar = el('div', 'pc-rec-bar');
+        const recInfo = el('div', 'pc-rec-info');
+        const recDot = el('span', 'pc-rec-dot' + (recordingState === 'recording' ? ' active' : ''));
+        const recStatus = el('span', 'pc-rec-status', recordingState === 'recording' ? `REC ${recordingDuration}` : (recordingState === 'paused' ? `PAUSED ${recordingDuration}` : 'Full Screen Video'));
+        recInfo.appendChild(recDot);
+        recInfo.appendChild(recStatus);
+        recBar.appendChild(recInfo);
+
+        const recControls = el('div', 'pc-rec-controls');
+        if (recordingState === 'inactive') {
+          const startBtn = el('button', 'pc-rec-btn', '🔴 Record');
+          startBtn.title = 'Start full screen meeting video & audio recording';
+          startBtn.addEventListener('click', async () => {
+            try {
+              startBtn.textContent = 'Starting…';
+              startBtn.disabled = true;
+              await VR.startRecording({
+                includeMic: true,
+                onTick: ({ formatted }) => {
+                  recordingDuration = formatted;
+                  recStatus.textContent = `REC ${formatted}`;
+                  if (!expanded) {
+                    pillLabel.textContent = `🔴 ${formatted}`;
+                  }
+                },
+                onStateChange: (newState) => {
+                  recordingState = newState;
+                  renderMainView();
+                  if (newState === 'inactive') {
+                    pillLabel.textContent = WORDMARK;
+                  }
+                }
+              });
+              recordingState = 'recording';
+              renderMainView();
+            } catch (err) {
+              console.error('Failed to start recording:', err);
+              recordingState = 'inactive';
+              renderMainView();
+              if (err.name !== 'NotAllowedError') {
+                alert('Could not start screen recording: ' + (err.message || err));
+              }
+            }
+          });
+          recControls.appendChild(startBtn);
+        } else {
+          const pauseBtn = el('button', 'pc-rec-btn pc-rec-btn-subtle', recordingState === 'paused' ? '▶️' : '⏸️');
+          pauseBtn.title = recordingState === 'paused' ? 'Resume recording' : 'Pause recording';
+          pauseBtn.addEventListener('click', () => {
+            if (recordingState === 'paused') {
+              VR.resumeRecording();
+            } else {
+              VR.pauseRecording();
+            }
+          });
+
+          const stopBtn = el('button', 'pc-rec-btn pc-rec-btn-danger', '⏹️ Stop & Save');
+          stopBtn.title = 'Stop recording and save video file';
+          stopBtn.addEventListener('click', async () => {
+            stopBtn.textContent = 'Saving…';
+            stopBtn.disabled = true;
+            const res = await VR.stopRecording();
+            recordingState = 'inactive';
+            pillLabel.textContent = WORDMARK;
+            renderMainView();
+            if (res && res.blob) {
+              VR.downloadVideo(res.blob, res.filename);
+              showVideoSavedToast(res);
+            }
+          });
+
+          recControls.appendChild(pauseBtn);
+          recControls.appendChild(stopBtn);
+        }
+        recBar.appendChild(recControls);
+        body.appendChild(recBar);
+      }
 
       // Section 1: Live Captured Items in this meeting
       const liveSection = el('div', 'pc-section');
@@ -331,6 +416,37 @@
       setTimeout(() => toast.remove(), 4500);
     }
 
+    function showVideoSavedToast(res) {
+      const toast = el('div', 'pc-toast');
+      toast.style.borderColor = '#4E9B84';
+      toast.appendChild(el('div', 'pc-toast-title', '✓ Video Recording Saved'));
+      toast.appendChild(
+        el(
+          'div',
+          'pc-toast-body',
+          `Captured ${res.formattedDuration} (${(res.sizeBytes / (1024 * 1024)).toFixed(1)} MB). Download started.`
+        )
+      );
+
+      const actions = el('div', 'pc-actions');
+      actions.style.marginTop = '8px';
+
+      const redownloadBtn = el('button', 'pc-btn pc-btn-ghost', '💾 Save Again');
+      redownloadBtn.addEventListener('click', () => {
+        const VR = global.Precedent && global.Precedent.VideoRecorder;
+        if (VR) VR.downloadVideo(res.blob, res.filename);
+      });
+      actions.appendChild(redownloadBtn);
+
+      const closeToastBtn = el('button', 'pc-btn pc-btn-primary', 'Dismiss');
+      closeToastBtn.addEventListener('click', () => toast.remove());
+      actions.appendChild(closeToastBtn);
+
+      toast.appendChild(actions);
+      root.appendChild(toast);
+      setTimeout(() => toast.remove(), 12000);
+    }
+
     document.documentElement.appendChild(host);
     setStatus('idle');
 
@@ -466,6 +582,72 @@
     .pc-btn { border-radius: 8px; padding: 7px 12px; font-size: 12px; cursor: pointer; border: 1px solid transparent; }
     .pc-btn-primary { background: #2F6B5E; color: #EFEAE0; }
     .pc-btn-ghost { background: transparent; color: #9AA0AE; border-color: rgba(239,234,224,0.16); }
+
+    .pc-rec-bar {
+      background: rgba(239,234,224,0.06);
+      border: 1px solid rgba(239,234,224,0.12);
+      border-radius: 10px;
+      padding: 9px 11px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pc-rec-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .pc-rec-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7A8195;
+    }
+    .pc-rec-dot.active {
+      background: #f85149;
+      box-shadow: 0 0 0 3px rgba(248,81,73,0.3);
+      animation: pcPulse 1.5s infinite;
+    }
+    @keyframes pcPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(248,81,73,0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(248,81,73,0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(248,81,73,0); }
+    }
+    .pc-rec-status {
+      font-size: 12px;
+      font-weight: 500;
+      color: #EFEAE0;
+    }
+    .pc-rec-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pc-rec-btn {
+      background: #2F6B5E;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pc-rec-btn:hover { background: #3d8676; }
+    .pc-rec-btn-danger {
+      background: #b4554a;
+    }
+    .pc-rec-btn-danger:hover { background: #cf6255; }
+    .pc-rec-btn-subtle {
+      background: rgba(239,234,224,0.12);
+      color: #EFEAE0;
+    }
+    .pc-rec-btn-subtle:hover { background: rgba(239,234,224,0.2); }
   `;
 
   global.Precedent = global.Precedent || {};

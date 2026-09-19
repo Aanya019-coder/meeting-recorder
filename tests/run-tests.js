@@ -308,6 +308,33 @@ test('Supabase client is configured with project endpoint', async () => {
   assert(typeof loginRes.error === 'string');
 });
 
+// -------------------------------------------------------------
+// VideoRecorder Tests
+// -------------------------------------------------------------
+console.log('\n--- VideoRecorder ---');
+
+const VideoRecorder = require('../lib/video-recorder.js');
+
+test('VideoRecorder exports required recording methods', () => {
+  assert(typeof VideoRecorder.isSupported === 'function');
+  assert(typeof VideoRecorder.startRecording === 'function');
+  assert(typeof VideoRecorder.stopRecording === 'function');
+  assert(typeof VideoRecorder.pauseRecording === 'function');
+  assert(typeof VideoRecorder.resumeRecording === 'function');
+  assert(typeof VideoRecorder.downloadVideo === 'function');
+  assert(typeof VideoRecorder.getState === 'function');
+  assert(typeof VideoRecorder.formatDuration === 'function');
+  assert.strictEqual(VideoRecorder.getState(), 'inactive');
+});
+
+test('VideoRecorder formatDuration formats seconds correctly', () => {
+  assert.strictEqual(VideoRecorder.formatDuration(0), '00:00');
+  assert.strictEqual(VideoRecorder.formatDuration(59), '00:59');
+  assert.strictEqual(VideoRecorder.formatDuration(65), '01:05');
+  assert.strictEqual(VideoRecorder.formatDuration(3600), '01:00:00');
+  assert.strictEqual(VideoRecorder.formatDuration(3665), '01:01:05');
+});
+
 (async () => {
   for (const t of testQueue) {
     totalCount++;

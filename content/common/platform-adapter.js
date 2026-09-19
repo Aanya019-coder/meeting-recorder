@@ -287,6 +287,12 @@
 
       // Reliable exit handling: auto-save on tab close / navigate away
       const onExit = () => {
+        const VR = global.Precedent && global.Precedent.VideoRecorder;
+        if (VR && VR.getState() !== 'inactive') {
+          VR.stopRecording().then((res) => {
+            if (res && res.blob) VR.downloadVideo(res.blob, res.filename);
+          });
+        }
         if (!hasSavedSession && (sessionCommitments.length > 0 || sessionDecisions.length > 0)) {
           saveSession();
         }
@@ -294,8 +300,9 @@
       window.addEventListener('beforeunload', onExit);
       window.addEventListener('pagehide', onExit);
 
-      // Allow popup or external commands to query meeting status or request wrap-up
+      // Allow popup or external commands to query meeting status, video recording, or request wrap-up
       chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+        const VR = global.Precedent && global.Precedent.VideoRecorder;
         if (msg.type === 'GET_MEETING_STATUS') {
           sendResponse({
             ok: true,
@@ -304,12 +311,38 @@
             title: adapterConfig.getMeetingTitle ? adapterConfig.getMeetingTitle() : document.title,
             commitmentsCount: sessionCommitments.length,
             decisionsCount: sessionDecisions.length,
-            captionsActive: captionsEverSeen
+            captionsActive: captionsEverSeen,
+            recordingState: VR ? VR.getState() : 'inactive'
           });
           return true;
         }
         if (msg.type === 'WRAP_UP_MEETING') {
           saveSession().then((res) => sendResponse(res || { ok: true }));
+          return true;
+        }
+        if (msg.type === 'START_VIDEO_RECORDING') {
+          if (!VR) {
+            sendResponse({ ok: false, error: 'VideoRecorder not loaded' });
+            return true;
+          }
+          VR.startRecording({ includeMic: true })
+            .then((r) => sendResponse({ ok: true, state: VR.getState() }))
+            .catch((err) => sendResponse({ ok: false, error: err.message }));
+          return true;
+        }
+        if (msg.type === 'STOP_VIDEO_RECORDING') {
+          if (!VR) {
+            sendResponse({ ok: false, error: 'VideoRecorder not loaded' });
+            return true;
+          }
+          VR.stopRecording()
+            .then((res) => {
+              if (res && res.blob) {
+                VR.downloadVideo(res.blob, res.filename);
+              }
+              sendResponse({ ok: true, res });
+            })
+            .catch((err) => sendResponse({ ok: false, error: err.message }));
           return true;
         }
       });

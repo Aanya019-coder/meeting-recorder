@@ -296,16 +296,16 @@ test('Supabase client initializes with default methods', () => {
   assert(typeof Supabase.getUser === 'function');
 });
 
-test('Supabase client handles empty config gracefully without throwing', async () => {
+test('Supabase client is configured with project endpoint', async () => {
   const cfg = await Supabase.getConfig();
   assert(typeof cfg === 'object');
-  assert(cfg.url !== undefined);
-  assert(cfg.anonKey !== undefined);
+  assert.strictEqual(cfg.url, 'https://dnwttcvuzohljotzgozn.supabase.co');
+  assert(cfg.anonKey && cfg.anonKey.startsWith('eyJ'));
 
-  // Signing in without configured URL returns clean error object
-  const loginRes = await Supabase.signInWithPassword({ email: 'test@example.com', password: 'secret' });
+  // Attempting to sign in with unverified test account returns clean error without throwing
+  const loginRes = await Supabase.signInWithPassword({ email: 'fake_nonexistent_user@example.com', password: 'wrongpassword' });
   assert.strictEqual(loginRes.ok, false);
-  assert(loginRes.error.includes('Supabase URL and Anon Key are not configured'));
+  assert(typeof loginRes.error === 'string');
 });
 
 (async () => {

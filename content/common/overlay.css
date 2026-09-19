@@ -1,0 +1,9 @@
+/* Guards the overlay's host element against aggressive page-level CSS
+   (e.g. "* { all: unset }" resets some call platforms apply). The panel's
+   real styling lives inside its closed shadow root in overlay-ui.js. */
+#precedent-overlay-host {
+  all: initial !important;
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  display: block !important;
+}

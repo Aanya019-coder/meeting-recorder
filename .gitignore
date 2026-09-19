@@ -1,0 +1,12 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dependencies & temporary folders
+node_modules/
+dist/
+build/
+*.zip

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Precedent</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="pc-pop-header">
+    <span class="pc-pop-wordmark">Precedent</span>
+    <span class="pc-pop-tagline">Meetings that remember</span>
+  </header>
+
+  <section id="status-section" class="pc-pop-status">
+    <span class="pc-pop-dot" id="status-dot"></span>
+    <span id="status-text">Checking this tab&hellip;</span>
+  </section>
+
+  <section id="active-call-section" class="pc-pop-active-call" style="display: none;">
+    <div class="pc-pop-call-header">
+      <span class="pc-pop-call-title" id="active-call-title">Meeting in progress</span>
+      <span class="pc-pop-call-badge" id="active-call-stats">0 captured</span>
+    </div>
+    <div class="pc-pop-call-actions">
+      <button id="active-call-save-btn" class="pc-pop-btn-primary">Wrap Up &amp; Save</button>
+    </div>
+  </section>
+
+  <section class="pc-pop-section">
+    <div class="pc-pop-section-title">Open commitments</div>
+    <div id="commitments-list" class="pc-pop-list">
+      <div class="pc-pop-empty">Loading&hellip;</div>
+    </div>
+  </section>
+
+  <section class="pc-pop-section">
+    <div class="pc-pop-section-title">Recent meetings</div>
+    <div id="meetings-list" class="pc-pop-list">
+      <div class="pc-pop-empty">Loading&hellip;</div>
+    </div>
+  </section>
+
+  <footer class="pc-pop-footer">
+    <button id="open-options" class="pc-pop-link">Settings &amp; data</button>
+    <button id="export-data" class="pc-pop-link">Export JSON</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+{
+  "manifest_version": 3,
+  "name": "Precedent \u2014 Meetings That Remember",
+  "version": "1.0.0",
+  "description": "Flags when a meeting is re-deciding something you already settled, and reminds attendees of open commitments before you start. Runs entirely on your device \u2014 no bots, no audio upload.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://meet.google.com/*",
+    "https://*.zoom.us/*",
+    "https://teams.microsoft.com/*",
+    "https://teams.live.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
+        "lib/hashing-vectorizer.js",
+        "lib/date-parser.js",
+        "lib/commitment-extractor.js",
+        "lib/decision-extractor.js",
+        "lib/attendee-matcher.js",
+        "content/common/caption-observer.js",
+        "content/common/overlay-ui.js",
+        "content/common/platform-adapter.js",
+        "content/meet.js"
+      ],
+      "css": [
+        "content/common/overlay.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.zoom.us/wc/*",
+        "https://*.zoom.us/j/*",
+        "https://*.zoom.us/s/*"
+      ],
+      "js": [
+        "lib/hashing-vectorizer.js",
+        "lib/date-parser.js",
+        "lib/commitment-extractor.js",
+        "lib/decision-extractor.js",
+        "lib/attendee-matcher.js",
+        "content/common/caption-observer.js",
+        "content/common/overlay-ui.js",
+        "content/common/platform-adapter.js",
+        "content/zoom.js"
+      ],
+      "css": [
+        "content/common/overlay.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://teams.microsoft.com/*",
+        "https://teams.live.com/*"
+      ],
+      "js": [
+        "lib/hashing-vectorizer.js",
+        "lib/date-parser.js",
+        "lib/commitment-extractor.js",
+        "lib/decision-extractor.js",
+        "lib/attendee-matcher.js",
+        "content/common/caption-observer.js",
+        "content/common/overlay-ui.js",
+        "content/common/platform-adapter.js",
+        "content/teams.js"
+      ],
+      "css": [
+        "content/common/overlay.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
